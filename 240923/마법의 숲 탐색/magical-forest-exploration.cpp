@@ -87,7 +87,7 @@ bool moveGollam(int row, int dir, int id) {
 			continue;
 		}
 
-		if (now.y > 2) {
+		if (now.y > 3) {
 			sy = now.y;
 			sx = now.x;
 
