@@ -13,7 +13,7 @@ struct Gollam {
 };
 
 int R, C, K;
-int Map[75][75];
+pair<int, int> Map[75][75];
 
 int sy, sx;
 int result = 0;
@@ -40,7 +40,7 @@ bool moveGollam(int row, int dir, int id) {
 			int ny = now.y + check_dy[0][i];
 			int nx = now.x + check_dx[0][i];
 
-			if (Map[ny][nx]) break;
+			if (Map[ny][nx].first) break;
 			if (nx < 1 || ny > R + 2 || nx > C) break;
 
 			cnt++;
@@ -58,7 +58,7 @@ bool moveGollam(int row, int dir, int id) {
 			int ny = now.y + check_dy[1][i];
 			int nx = now.x + check_dx[1][i];
 
-			if (Map[ny][nx]) break;
+			if (Map[ny][nx].first) break;
 			if (nx < 1 || ny > R + 2 || nx > C) break;
 
 			cnt++;
@@ -76,7 +76,7 @@ bool moveGollam(int row, int dir, int id) {
 			int ny = now.y + check_dy[2][i];
 			int nx = now.x + check_dx[2][i];
 
-			if (Map[ny][nx]) break;
+			if (Map[ny][nx].first) break;
 			if (nx < 1 || ny > R + 2 || nx > C) break;
 
 			cnt++;
@@ -91,14 +91,14 @@ bool moveGollam(int row, int dir, int id) {
 			sy = now.y;
 			sx = now.x;
 
-			Map[now.y][now.x] = now.id;
+			Map[now.y][now.x] = make_pair(now.id, 0);
 
 			for (int i = 0; i < 4; i++) {
 				int ny = now.y + dy[i];
 				int nx = now.x + dx[i];
 
-				if (i == now.dir) Map[ny][nx] = 10000 + now.id;
-				else Map[ny][nx] = now.id;
+				if (i == now.dir) Map[ny][nx] = make_pair(now.id, 1);
+				else Map[ny][nx] = make_pair(now.id, 0);
 			}
 			return true;
 		}
@@ -122,7 +122,7 @@ void moveSpirit() {
 		else continue;
 
 		maxi = max(maxi, now.y);
-		if (maxi == R+2) break;
+		if (maxi == R + 2) break;
 
 		for (int i = 0; i < 4; i++) {
 			int ny = now.y + dy[i];
@@ -130,8 +130,8 @@ void moveSpirit() {
 
 			if (ny < 1 || nx < 1 || ny > R + 2 || nx > C) continue;
 			if (visited[ny][nx]) continue;
-			if (!Map[ny][nx]) continue;
-			if (Map[now.y][now.x] % 10000 != Map[ny][nx] % 10000 && Map[now.y][now.x] / 10000 != 1) continue;
+			if (!Map[ny][nx].first) continue;
+			if (Map[now.y][now.x].first != Map[ny][nx].first && !Map[now.y][now.x].second) continue;
 
 			q.push({ ny, nx });
 		}
@@ -141,7 +141,7 @@ void moveSpirit() {
 }
 
 void reset() {
-	for (int i = 1; i <= R + 2; i++) memset(Map[i], 0, sizeof(int) * (C+2));
+	for (int i = 1; i <= R + 2; i++) memset(Map[i], 0, sizeof(pair<int, int>) * (C + 2));
 }
 
 int main() {
