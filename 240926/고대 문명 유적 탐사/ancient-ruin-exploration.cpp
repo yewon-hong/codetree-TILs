@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <filesystem>
 
 using namespace std;
 
@@ -150,18 +151,6 @@ int main() {
 		cin >> num;
 		vec.push_back(num);
 	}
-
-	/*for (int i = 0; i < 4; i++) {
-		turnBox(3, 4, i);
-
-		for (int y = 1; y < 6; y++) {
-			for (int x = 1; x < 6; x++) {
-				cout << Map2[y][x];
-			}
-			cout << '\n';
-		}
-		cout << '\n';
-	}*/
 
 	// 시작
 	while (K--) {
