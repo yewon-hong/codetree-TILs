@@ -62,14 +62,15 @@ void turnBox(int y, int x, int dir) {
 
 vector<Coord> BFS(int MAP[6][6]) {
 	vector<Coord> path;
-	int visited[6][6] = {0};
+	int visited[6][6] = { 0 };
 
 	for (int i = 1; i < 6; i++) {
 		for (int j = 1; j < 6; j++) {
 			if (visited[i][j]) continue;
 			queue<Node> q;
+			int cnt = 1;
 
-			q.push({ i, j, 1 });
+			q.push({ i, j, cnt });
 			Node now;
 
 			while (!q.empty()) {
@@ -89,7 +90,7 @@ vector<Coord> BFS(int MAP[6][6]) {
 					if (visited[ny][nx]) continue;
 					if (MAP[ny][nx] != MAP[now.y][now.x]) continue;
 
-					q.push({ ny, nx, now.dir + 1 });
+					q.push({ ny, nx, ++cnt });
 				}
 
 			}
@@ -114,14 +115,15 @@ bool compare(Coord left, Coord right) { // 열이 작은 순으로 -> 행이 작
 }
 
 Node exploration() {
-	Node result = {6, 6, 3, 0};
+	Node result = { 6, 6, 3, 0 };
+	copy(&Map[0][0], &Map[0][0] + (6 * 6), &Map2[0][0]);
 
 	for (int d = 1; d < 4; d++) {
 		for (int i = 2; i < 5; i++) {
 			for (int j = 2; j < 5; j++) {
 				turnBox(i, j, d);
 				vector<Coord> vec = BFS(Map2);
-				Node next = { i, j, d, (int)vec.size(), vec};
+				Node next = { i, j, d, (int)vec.size(), vec };
 				if (result < next) result = next;
 				turnBox(i, j, 0); // 초기화
 			}
@@ -129,7 +131,7 @@ Node exploration() {
 	}
 
 	setMap(result);
-	
+
 	return result;
 }
 
@@ -150,7 +152,7 @@ int main() {
 	}
 
 	/*for (int i = 0; i < 4; i++) {
-		turnBox(3, 2, i);
+		turnBox(3, 4, i);
 
 		for (int y = 1; y < 6; y++) {
 			for (int x = 1; x < 6; x++) {
@@ -185,6 +187,7 @@ int main() {
 
 			// BFS 돌기 & vector 갱신
 			now.path = BFS(Map);
+
 			// 만약 유물이 없을 경우 break
 			if (now.path.size() == 0) break;
 			else answer += now.path.size();
