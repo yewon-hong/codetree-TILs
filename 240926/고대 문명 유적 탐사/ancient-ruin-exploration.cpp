@@ -87,7 +87,7 @@ vector<Coord> BFS(int MAP[6][6]) {
 					int ny = now.y + dy[k];
 					int nx = now.x + dx[k];
 
-					if (ny < 1 || ny > 6 || nx < 1 || nx > 6) continue;
+					if (ny < 1 || ny >= 6 || nx < 1 || nx >= 6) continue;
 					if (visited[ny][nx]) continue;
 					if (MAP[ny][nx] != MAP[now.y][now.x]) continue;
 
