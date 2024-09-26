@@ -167,6 +167,7 @@ int main() {
 	while (K--) {
 		int answer = 0;
 
+
 		Node now = exploration();
 		if (now.path.size() == 0) { //유물이 없을 경우
 			break;
