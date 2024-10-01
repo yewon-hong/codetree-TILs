@@ -7,18 +7,18 @@
 using namespace std;
 
 /*
-5 30 10 2 3
-4 4
-6 2 3
-7 5 5
-2 5 1
-5 1 4
-4 5 2
-1 3 3
-9 4 1
-8 2 2
-3 3 2
-10 2 1
+5 10 10 3 1
+2 2
+7 1 5
+5 1 1
+10 4 4
+9 3 5
+6 4 2
+4 5 1
+8 5 3
+2 4 5
+3 4 1
+1 1 4
 */
 
 struct Rudolph {
@@ -105,7 +105,8 @@ void checkCollision(int score, int DIR) {
 		
 		santas[Map[Rr][Rc]].score += score; // 충돌한 산타에 점수 추가
 		santas[Map[Rr][Rc]].fainting = true; // 충돌한 산타 기절
-		
+		santas[Map[Rr][Rc]].cnt = 0;
+
 		int now_y = Rr + dy_R[DIR] * score; // 충돌한 산타 밀려남
 		int now_x = Rc + dx_R[DIR] * score; // 충돌한 산타 밀려남
 
