@@ -57,6 +57,7 @@ void moveRudolph() {
 	int mini_y = 0;
 	int mini_x = 0;
 
+	// 가장 가까운 산타 탐색
 	for (int i = 1; i < santas.size(); i++) {
 		if (santas[i].die) continue;
 		int temp = (int)pow(santas[i].y - Rr, 2) + (int)pow(santas[i].x - Rc, 2);
@@ -73,6 +74,7 @@ void moveRudolph() {
 		}
 	}
 
+	// 해당 산타와 가장 가까운 방향 탐색
 	int mini_santa = 6000;
 	Rudolph next = { 0, 0 };
 	int dir = 0;
@@ -91,6 +93,7 @@ void moveRudolph() {
 		}
 	}
 
+	// 이동 및 방향 저장
 	Rr = next.y;
 	Rc = next.x;
 	Rver++;
@@ -105,37 +108,35 @@ void checkCollision(int score, int DIR) {
 		
 		santas[Map[Rr][Rc]].score += score; // 충돌한 산타에 점수 추가
 		santas[Map[Rr][Rc]].fainting = true; // 충돌한 산타 기절
-		santas[Map[Rr][Rc]].cnt = 0;
+		santas[Map[Rr][Rc]].cnt = 0; // 쉬어야 할 횟수 초기화
 
 		int now_y = Rr + dy_R[DIR] * score; // 충돌한 산타 밀려남
-		int now_x = Rc + dx_R[DIR] * score; // 충돌한 산타 밀려남
+		int now_x = Rc + dx_R[DIR] * score;
 
 		if (now_y <1 || now_y >N || now_x <1 || now_x >N) { // 판 밖으로 밀려날 경우
 			santas[Map[Rr][Rc]].die = true;
 			Map[Rr][Rc] = 0;
-			P--;
 		}
 		else { // 판 안에서 살아남을 경우 -> 상호작용 확인
 			if (Map[now_y][now_x]) { // 다른 산타가 있을 경우
 				int cnt = 0;
 				while (1) { // 밀려날 칸이 없거나, 밀어낼 산타가 없을 때까지
-					if (now_y <1 || now_y >N || now_x <1 || now_x >N) break;
+					if (now_y < 1 || now_y > N || now_x < 1 || now_x > N) break;
 					if (!Map[now_y][now_x]) break;
 					cnt++;
 					now_y += dy_R[DIR];
 					now_x += dx_R[DIR];
 				}
 
-				if (now_y <1 || now_y >N || now_x <1 || now_x >N) { // 상호작용으로 다른 산타가 밀려나서 탈락할 경우
+				if (now_y < 1 || now_y > N || now_x < 1 || now_x > N) { // 상호작용으로 다른 산타가 밀려나서 탈락할 경우
 
 					now_y += dy_R[(DIR + 4) % 8];
 					now_x += dx_R[(DIR + 4) % 8];
 					santas[Map[now_y][now_x]].die = true;
-					P--;
 					cnt--;
 				}
 
-				while (cnt--) {
+				while (cnt--) { // 하나씩 이동시키면서 vector 내 좌표 업데이트
 					Map[now_y][now_x] = Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]];
 					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]]].y = now_y;
 					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]]].x = now_x;
@@ -144,13 +145,14 @@ void checkCollision(int score, int DIR) {
 					now_x += dx_R[(DIR + 4) % 8];
 				}
 				
+				// 충돌한 산타 이동 및 vector 내 좌표 업데이트
 				Map[now_y][now_x] = Map[Rr][Rc];
 				santas[Map[Rr][Rc]].y = now_y;
 				santas[Map[Rr][Rc]].x = now_x;
 				Map[Rr][Rc] = 0;
 
 			}
-			else { // 없을 경우 이동 후 이전 위치 삭제
+			else { // 없을 경우 이동 후 이전 위치 삭제 & 좌표 업데이트
 				Map[now_y][now_x] = Map[Rr][Rc];
 				santas[Map[Rr][Rc]].y = now_y;
 				santas[Map[Rr][Rc]].x = now_x;
@@ -167,13 +169,9 @@ void moveSantas() {
 	// 1번 산타부터 순서대로 이동
 	for (int i = 1; i < santas.size(); i++) {
 		Santa now = santas[i];
-		if (now.die) continue; // 죽었으면 continue
-		if (now.fainting) { // 기절했으면 다음턴에는 돌도록 false로 바꾸고 continue
-			//now.cnt++;
-			continue;
-		}
+		if (now.die || now.fainting) continue; // 죽었거나 기절했으면 continue
 
-		int mini_santa = pow(Rr - now.y, 2) + pow(Rc - now.x, 2);
+		int mini_santa = pow(Rr - now.y, 2) + pow(Rc - now.x, 2); // 현재 루돌프와의 거리 저장
 		Rudolph next = { now.y, now.x };
 		int dir = -1;
 		for (int j = 0; j < 4; j++) { // 4방향 중 루돌프와 가까운 방향 확인
@@ -185,7 +183,7 @@ void moveSantas() {
 
 			int temp = pow(Rr - ny, 2) + pow(Rc - nx, 2);
 
-			if (temp < mini_santa) {
+			if (temp < mini_santa) { // 현재 거리보다 작은 경우만 갱신
 				mini_santa = temp;
 				next = { ny, nx };
 				dir = j;
@@ -209,16 +207,16 @@ void moveSantas() {
 bool getOnePoint() {
 	bool flag = false;
 	for (int i = 1; i < santas.size(); i++) {
-		if (santas[i].die) continue;
-		if (santas[i].fainting) {
-			if (santas[i].cnt == 0) santas[i].cnt++;
-			else {
+		if (santas[i].die) continue; // 죽었으면 continue
+		if (santas[i].fainting) { // 기절했을 경우
+			if (santas[i].cnt == 0) santas[i].cnt++; // 아직 한 턴 안쉬었으면 쉬도록
+			else { // 한 턴 쉬었으면 다음 턴에서 이동 가능하도록
 				santas[i].fainting = false;
 				santas[i].cnt = 0;
 			}
 		}
 		flag = true;
-		santas[i].score++;
+		santas[i].score++; // 1점씩 추가
 	}
 
 	return flag;
@@ -238,11 +236,10 @@ int main() {
 		Map[Sr][Sc] = Pn;
 	}
 
-	sort(santas.begin(), santas.end());
+	sort(santas.begin(), santas.end()); // 아이디 기준으로 sort
 
 	// 턴 진행
 	while (M--) {
-		//if (P == 0) break;
 		moveRudolph();
 		checkCollision(C, Rdir);
 		moveSantas();
