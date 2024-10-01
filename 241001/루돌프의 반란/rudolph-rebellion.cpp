@@ -57,7 +57,7 @@ void moveRudolph() {
 	int mini_y = 0;
 	int mini_x = 0;
 
-	for (int i = 0; i < santas.size(); i++) {
+	for (int i = 1; i < santas.size(); i++) {
 		if (santas[i].die) continue;
 		int temp = (int)pow(santas[i].y - Rr, 2) + (int)pow(santas[i].x - Rc, 2);
 		if (temp < mini) {
@@ -103,14 +103,14 @@ void moveRudolph() {
 void checkCollision(int score, int DIR) {
 	if (Map[Rr][Rc]) { // 루돌프와 산타가 충돌할 경우
 		
-		santas[Map[Rr][Rc] - 1].score += score; // 충돌한 산타에 점수 추가
-		santas[Map[Rr][Rc] - 1].fainting = true; // 충돌한 산타 기절
+		santas[Map[Rr][Rc]].score += score; // 충돌한 산타에 점수 추가
+		santas[Map[Rr][Rc]].fainting = true; // 충돌한 산타 기절
 		
 		int now_y = Rr + dy_R[DIR] * score; // 충돌한 산타 밀려남
 		int now_x = Rc + dx_R[DIR] * score; // 충돌한 산타 밀려남
 
 		if (now_y <1 || now_y >N || now_x <1 || now_x >N) { // 판 밖으로 밀려날 경우
-			santas[Map[Rr][Rc] - 1].die = true;
+			santas[Map[Rr][Rc]].die = true;
 			Map[Rr][Rc] = 0;
 			P--;
 		}
@@ -129,30 +129,30 @@ void checkCollision(int score, int DIR) {
 
 					now_y += dy_R[(DIR + 4) % 8];
 					now_x += dx_R[(DIR + 4) % 8];
-					santas[Map[now_y][now_x]-1].die = true;
+					santas[Map[now_y][now_x]].die = true;
 					P--;
 					cnt--;
 				}
 
 				while (cnt--) {
 					Map[now_y][now_x] = Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]];
-					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]] - 1].y = now_y;
-					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]] - 1].x = now_x;
+					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]]].y = now_y;
+					santas[Map[now_y + dy_R[(DIR + 4) % 8]][now_x + dx_R[(DIR + 4) % 8]]].x = now_x;
 
 					now_y += dy_R[(DIR + 4) % 8];
 					now_x += dx_R[(DIR + 4) % 8];
 				}
 				
 				Map[now_y][now_x] = Map[Rr][Rc];
-				santas[Map[Rr][Rc] - 1].y = now_y;
-				santas[Map[Rr][Rc] - 1].x = now_x;
+				santas[Map[Rr][Rc]].y = now_y;
+				santas[Map[Rr][Rc]].x = now_x;
 				Map[Rr][Rc] = 0;
 
 			}
 			else { // 없을 경우 이동 후 이전 위치 삭제
 				Map[now_y][now_x] = Map[Rr][Rc];
-				santas[Map[Rr][Rc] - 1].y = now_y;
-				santas[Map[Rr][Rc] - 1].x = now_x;
+				santas[Map[Rr][Rc]].y = now_y;
+				santas[Map[Rr][Rc]].x = now_x;
 				Map[Rr][Rc] = 0;
 			}
 				
@@ -164,7 +164,7 @@ void checkCollision(int score, int DIR) {
 
 void moveSantas() {
 	// 1번 산타부터 순서대로 이동
-	for (int i = 0; i < santas.size(); i++) {
+	for (int i = 1; i < santas.size(); i++) {
 		Santa now = santas[i];
 		if (now.die) continue; // 죽었으면 continue
 		if (now.fainting) { // 기절했으면 다음턴에는 돌도록 false로 바꾸고 continue
@@ -192,7 +192,7 @@ void moveSantas() {
 		}
 
 		if (dir != -1) { // 움직일 곳이 있을 경우
-			Map[next.y][next.x] = i + 1;
+			Map[next.y][next.x] = i;
 			Map[now.y][now.x] = 0;
 			santas[i].y = next.y;
 			santas[i].x = next.x;
@@ -207,7 +207,7 @@ void moveSantas() {
 
 bool getOnePoint() {
 	bool flag = false;
-	for (int i = 0; i < santas.size(); i++) {
+	for (int i = 1; i < santas.size(); i++) {
 		if (santas[i].die) continue;
 		if (santas[i].fainting) {
 			if (santas[i].cnt == 0) santas[i].cnt++;
@@ -229,7 +229,8 @@ int main() {
 	cin >> Rr >> Rc;
 	Rver = 0;
 
-	int Pn, Sr, Sc;
+	int Pn = 0, Sr = -1, Sc = -1;
+	santas.push_back({ Sr, Sc, Pn, 0, true, true, 0 });
 	for (int i = 0; i < P; i++) {
 		cin >> Pn >> Sr >> Sc;
 		santas.push_back({ Sr, Sc, Pn, 0, false, false, 0 });
@@ -248,7 +249,7 @@ int main() {
 	}
 
 	// 산타별 점수 출력
-	for (int i = 0; i < santas.size(); i++) cout << santas[i].score << ' ';
+	for (int i = 1; i < santas.size(); i++) cout << santas[i].score << ' ';
 
 	return 0;
 }
